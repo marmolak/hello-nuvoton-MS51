@@ -2,18 +2,23 @@
 
 static void setup()
 {
-      ALL_GPIO_QUASI_MODE;
+    ALL_GPIO_PUSHPULL_MODE;
+}
+
+static void loop(void)
+{
+    P1 = 0xff;
+    Timer0_Delay(16000000,200,1000);
+    P1=0x00;
+    Timer0_Delay(16000000,200,1000);
 }
 
 void main(void)
 {
     setup();
 
-    while(1)
+    for (;;)
     {
-        P1 = 0xff;
-        Timer0_Delay(16000000,200,1000);;
-        P1=0x00;
-        Timer0_Delay(16000000,200,1000);;
+        loop();
     }
 }

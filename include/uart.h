@@ -13,7 +13,7 @@ void UART_Open(unsigned long u32SysClock, unsigned char u8UARTPort,unsigned long
 void UART_Send_Data(unsigned char UARTPort, unsigned char c);
 unsigned char Receive_Data(unsigned char UARTPort);
 
-extern   __bit PRINTFG,uart0_receive_flag,uart1_receive_flag;
-extern   unsigned char uart0_receive_data,uart1_receive_data;
+extern volatile __bit PRINTFG,uart0_receive_flag,uart1_receive_flag;
+extern volatile unsigned char uart0_receive_data,uart1_receive_data;
 
 #endif /* UART_H */

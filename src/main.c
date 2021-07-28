@@ -1,25 +1,76 @@
 #include "MS51_16K.h"
 
-/*
-Why here? According to sdcc docs:
-    If you have multiple source files in your project, interrupt service routines can be present in any of them, but a
-    prototype of the isr MUST be present or included in the file that contains the function main.
+#include "UARThw/UARThw.h"
 
-    And uart.h contains isr routines.
-*/
-#include "uart.h"
+static const uint8_t bufa[] = "hello"; 
+static const uint8_t bufa_size = sizeof(bufa) / sizeof(bufa[0]);
+static volatile uint8_t bufa_count = 0;
+static volatile uint8_t bufa_match = 0;
 
-static void setup()
+// Message on output
+static const char *const hello = "Hello world!\n";
+
+void UART0_ISR(void) __interrupt(4)
 {
-    ALL_GPIO_PUSHPULL_MODE;
+    // received byte
+    if (RI == 1)
+    {
+        const uint8_t tmp = UART0_GetData();
+        if (bufa[bufa_count] != tmp)
+        {
+            RI = 0;
+            bufa_count = 0;
+            return;
+        }
+
+        ++bufa_count;
+        if (bufa_count == (bufa_size - 1))
+        {
+            bufa_count = 0;
+            bufa_match = 1;
+            RI = 0;
+            EA = 0;
+            return;
+        }
+
+        RI = 0;
+    }
+
 }
+
+static void setup(void)
+{
+    UART0_Init();
+    UART0_EnableInterrupt();
+
+    // enable interrupts globally
+    EA = 1;
+}
+
 
 static void loop(void)
 {
-    P1 = 0xff;
-    Timer0_Delay(16000000,200,1000);
-    P1=0x00;
-    Timer0_Delay(16000000,200,1000);
+   const char *ptr = hello;
+
+   if (bufa_match != 1)
+   {
+       return;
+   }
+
+   // ok... match found
+   UART0_SendData(0x14);
+   while (UART0_GetFlag(UART0_TX_FLAG) == 0) {}
+   UART0_ClearFlag(UART0_TX_FLAG);
+
+   while (*ptr != '\0')
+   {
+        UART0_SendData(*ptr);
+        while (UART0_GetFlag(UART0_TX_FLAG) == 0) {}
+        UART0_ClearFlag(UART0_TX_FLAG);
+        ++ptr;   
+    }
+    bufa_match = 0;
+    EA = 1;
 }
 
 void main(void)

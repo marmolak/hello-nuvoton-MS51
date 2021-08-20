@@ -2,32 +2,16 @@
 
 void UART0_Init(void)
 {
-	/* baud rate Timer 3 */
-	T3CON |= (1 << 5);
-	/* timer 3 */
-	/* Pre-Scalar */
-	T3CON &= ~0x07;
-	T3CON |= 0x00;
-	/* Interrupt */
-	EIE1 &= ~(1 << 1);
-	RH3 = 0xff;
-	RL3 = 0xf7;
-	T3CON |= (1 << 3);
-	PCON |= (1 << 7);
-	/* GPIO */
-	P06 = 1;
-	P0M1 &= ~(1 << 6);
-	P0M2 |= (1 << 6);
-	P07 = 1;
-	P0M1 &= ~(1 << 7);
-	P0M2 &= ~(1 << 7);
-	/* uart 0 */
-	PCON &= ~(1 << 6);
-	SM0 = 0;
-	SM1 = 1;
-	/* enable */
-	RI = 0;
-	REN = 1;
+    P06_QUASI_MODE;    //Setting UART pin as Quasi mode for transmit
+	P07_QUASI_MODE;    //Setting UART pin as Quasi mode for transmit  
+	SCON = 0x50;            /*UART0 Mode1,REN=1,TI=1*/
+	set_PCON_SMOD;          /*UART0 Double Rate Enable*/
+ 	T3CON &= 0xF8;           /*T3PS2=0,T3PS1=0,T3PS0=0(Prescale=1)*/
+ 	set_T3CON_BRCK;          /*UART0 baud rate clock source = Timer3*/
+	RH3    = 0xFF;   /* HIBYTE(65536 - 13)*/
+	RL3    = 0xF3;   /* LOBYTE(65536 - 13); */
+	set_T3CON_TR3;          /*Trigger Timer3*/
+	ES=1;
 }
 
 void UART0_SendData(uint8_t u8Data)

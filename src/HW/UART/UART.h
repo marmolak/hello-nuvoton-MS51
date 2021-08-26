@@ -1,6 +1,6 @@
 /* UARThw.h */
-#ifndef UARTHW_H
-#define UARTHW_H
+#ifndef UART_H
+#define UART_H
 
 #include "MS51_16K.h"
 
@@ -15,4 +15,4 @@ void UART0_DisableInterrupt(void);
 void UART0_ClearFlag(uint8_t u8Flag);
 uint8_t UART0_GetFlag(uint8_t u8Flag);
 
-#endif /* UARTHW_H */
+#endif /* UART_H */

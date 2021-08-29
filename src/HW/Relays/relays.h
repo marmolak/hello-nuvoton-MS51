@@ -12,10 +12,12 @@
  *  Open relay  4:A0 04 01 A5
  *  Close relay 4:A0 04 00 A4
  */
-#define RELAY4 P01
-#define RELAY3 P04
+#define RELAY1 P00
+//#define RELAY1 P12 // - LED - debug purposes
+
 #define RELAY2 P03
-#define RELAY1 P05
+#define RELAY3 P04
+#define RELAY4 P01
 
 void init_relays(void);
 

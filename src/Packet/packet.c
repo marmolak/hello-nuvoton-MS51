@@ -1,6 +1,7 @@
 #include "Packet/packet.h"
 #include "HW/UART/UART.h"
 #include "MS51_16K.h"
+#include "config.h"
 
 volatile uint8_t packet_content[packet_size];
 volatile uint8_t packet_count = 0;
@@ -40,6 +41,12 @@ uint8_t validate_packet(void)
     {
         return 0;
     }
+
+	if (packet_content[1] > CONF_RELAYS)
+	{
+		return 0;
+	}
+
     const uint8_t checksum = packet_content[0] + packet_content[1] + packet_content[2];
 
     return (checksum == packet_content[3]);
